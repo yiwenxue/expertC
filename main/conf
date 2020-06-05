@@ -1,0 +1,5 @@
+#This is a config file for example
+name    /etc/X11/xorg.conf.d/20-intel.conf #you can commit at the end of an entry
+path    Null
+draw    70
+draw    102875
