@@ -1,6 +1,6 @@
 #include <stdio.h>
-#include "module.h"
-#include "list.h"
+#include <module.h>
+#include <list.h>
 
 extern struct modlist * m_listp;
 
@@ -29,8 +29,9 @@ moduledata_t gsay_mod = {
     NULL
 };
 
-struct module mymod = {
+struct module *mymod = & (struct module ){
     "gsay",
+    1,
     &gsay_mod,
     {NULL, NULL}
 };

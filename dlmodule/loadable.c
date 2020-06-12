@@ -1,14 +1,17 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <dlfcn.h>
-#include <module.h>
+#include "module.h"
+#include "list.h"
 
-struct module_data_t *new;
+struct module *new;
 
 int plist_len = 10;
-struct module_data_t *plist[10]; 
+struct moduledata_t *plist[10]; 
 
-int load_func(char *modulename){
+extern struct modlist *m_listp;
+
+int loadmod(char *modulename){
     void *handle;
 
     int count = 0;
@@ -16,13 +19,19 @@ int load_func(char *modulename){
         return 1;
     }
 
-    new = dlsym(handle, "module_print");
+    new = dlsym(handle, "mymod");
+
+    new->moduledata->load(MOD_LOAD,
+            new->moduledata->extra);
+
+    LIST_INSERT_HEAD(m_listp, new, mod_list);
+
+    /* new->moduledata->load(); */
+
     if (dlerror() != NULL){
         dlclose(handle);
         return 2;
     }
-
-    plist[0] = new;   
 
     printf("Module name: %s\n", new->name);
     return 0;
@@ -34,12 +43,15 @@ int main(int argc, char *argv[])
         printf("usae: %s <path to module>\n", argv[0]);
         return -1;
     }
+
+    LIST_INIT(m_listp);
+
     /** plist init */
     for (int i = 0; i < plist_len; ++i) {
         plist[i] = NULL;
     }
     int load = 0;
-    load = load_func(argv[1]);
+    load = loadmod(argv[1]);
     if (load != 0){
         return load;
     }
@@ -50,10 +62,17 @@ int main(int argc, char *argv[])
         for (int i = 0; i < plist_len; ++i) {
             if (plist[i] != NULL){
                 printf("ps: %s\n", plist[i]->name);
-                plist[i]->handle((void *)"hello");
             }
         }
         j++;
     }
+
+    struct module *var;
+    LIST_FOREACH(var, m_listp, mod_list){
+        var->moduledata->load(MOD_UNLOAD, 
+                var->moduledata->extra);
+        LIST_REMOVE(var, mod_list);
+    }
+
     return 0;
 }

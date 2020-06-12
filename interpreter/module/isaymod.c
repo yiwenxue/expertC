@@ -1,6 +1,6 @@
 #include <stdio.h>
-#include "module.h"
-#include "list.h"
+#include <module.h>
+#include <list.h>
 
 extern struct modlist * m_listp;
 
@@ -10,10 +10,10 @@ load(int cmd, void *arg){
 
     switch (cmd){
         case MOD_LOAD:
-            printf("Hello interpreter, God say loaded!\n");
+            printf("Hello interpreter, I say loaded!\n");
             break;
         case MOD_UNLOAD:
-            printf("Bye world, God say unloaded!\n");
+            printf("Bye world, I say unloaded!\n");
             break;
         default:
             error = -1;
@@ -23,14 +23,15 @@ load(int cmd, void *arg){
 }
 
 static struct 
-moduledata_t gsay_mod = {
-    "gsay",
+moduledata_t isay_mod = {
+    "isay",
     load,
     NULL
 };
 
-struct module mymod = {
-    "gsay",
-    &gsay_mod,
+struct module *mymod  = &(struct module ){
+    "isay",
+    2,
+    &isay_mod,
     {NULL, NULL}
 };

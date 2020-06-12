@@ -1,6 +1,6 @@
 CC=clang 
-CFLAGS=
-LIBS=
+CFLAGS= -I./ 
+LIBS= -ldl
 
 project=inter
 
@@ -10,7 +10,7 @@ test:
 	@echo "Test ${project}:"
 	./${project}
 
-${project}: ${project}.c
+${project}: ${project}.c module.h list.h command.h 
 	${CC} ${CFLAGS} ${LIBS} -o ${project} ${project}.c
 
 .PHONY:clean

@@ -1,0 +1,12 @@
+#include <stdio.h>
+#include <string.h>
+#include <module.h>
+
+static char *name = "Hey man, I am your father!\n";
+
+void print(void *args){
+    char *uap = (char *)args;
+    printf("mod: %s\n %s\n", uap, name);
+}
+
+struct module_data_t module_print = {"print", print};

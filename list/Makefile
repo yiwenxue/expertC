@@ -1,10 +1,14 @@
 CC=clang
 LIBS=
 INCLUDES= -I./
-CFLAGS= -O3 ${INCLUDES}
+CFLAGS= -O3 ${INCLUDES} -DDebug=0 
 
 
-all: mylist 
+all: mylist test
+
+test: mylist
+	@echo "Run test routine"
+	./mylist 7
 
 mylist: mylist.o
 	$(CC) -o mylist mylist.o ${LIBS} ${CFLAGS}

@@ -13,12 +13,12 @@ test:
 ${project}: ${project}.c
 	${CC} ${CFLAGS} ${LIBS} -o ${project} ${project}.c
 
-module: module.c Makefile.m 
-	make -C ./ -f Makefile.m
+module: module.c module.mk 
+	make -C ./ -f module.mk
 
 .PHONY:clean
 
 clean:
 	rm -rf ${project}
-	make -C ./ -f Makefile.m clean
+	make -C ./ -f module.mk clean
 
