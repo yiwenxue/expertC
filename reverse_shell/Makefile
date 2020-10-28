@@ -1,16 +1,16 @@
-CC=clang
-CFLAGS=
+CC=clang 
+CFLAGS= -I./ -I./include
+LIBS=
 
-all: client server 
+all: listen reverse_shell
 
-client: client.c
-	$(CC) client.c -o client
+listen: listen.c
+	$(CC) ${CFLAGS} ${LIBS} listen.c -o listen
 
-server: server.c 
-	$(CC) server.c -o server 
+reverse_shell: reverse_shell.c
+	$(CC) ${CFLAGS} ${LIBS} reverse_shell.c -o reverse_shell
 
-
-.PHONY: clean
+.PHONY:clean
 
 clean:
-	rm -f server client 
+	rm -rf reverse_shell listen
