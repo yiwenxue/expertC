@@ -1,5 +1,5 @@
 CC= clang
-CFLAGS= -fPIC -I../
+CFLAGS= -fPIC -I../ -I../../libyiwen/include/
 LIBS= 
 LDFLAGS= -shared ${LIBS}
 

@@ -130,7 +130,7 @@ int show_prompt(char *prompt)
 
 int ghelp(char *arg){
     struct mycmd *cmdmod_headp = &cmdmod_head;
-    struct command_modules *var;
+    struct command_modules *var = NULL;
     printf("Usage:\n");
     LIST_FOREACH_FROM(var, cmdmod_headp, cmd_list){
         printf("    %s", var->cmd);
