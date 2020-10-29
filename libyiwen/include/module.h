@@ -36,6 +36,7 @@
 #include "list.h"
 #include <stdio.h>
 #include <string.h>
+#include <malloc.h>
 #include <dlfcn.h>
 
 /*-
@@ -64,107 +65,164 @@ enum modstat{
 };
 
 /* The DL module prototype. */
-struct moduledata_t{
+struct module_data{
     const char              *name;          /* Name of the module. */
     int                     (*load)(int cmd ,void *);/* Initialize function of modules. */
     void                    *extra;         /* Extra data for modules. */
+};
+typedef struct module_data module_data_t;
+
+struct module_data_wrap{
+    const module_data_t *data;
 };
 
 /* The modular list. created and maintained by main program.*/
 struct module{
     const char              *name;          /* Name of the module.*/
-    int                     modid;          /* Module id. */
-    struct moduledata_t     *moduledata;    /* Module data, module information included. */
-    LIST_ENTRY(module)      mod_list;       /* List of all modules. */
+    unsigned int            modid;          /* Module id. */
+    const struct module_data *moduledata;    /* Module data, module information included. */
+    LIST_ENTRY(module)      m_list;       /* List of all modules. */
     void                    *modfile;       /* Pointer to module file */
 };
+typedef struct module module_t;
 
-int     modload(char *modulename);
-int     modunload(char *modulename);
-void    modshow(struct module *var);
+#define MODULE_METADATA(name, arg)         \
+    struct module_data_wrap mod_data = {    \
+        .data = arg};                  
+
+#define DECLARE_MODULE(name, data)          \
+    MODULE_METADATA(#name, &data);          
+
+LIST_HEAD(m_list_h, module);             /* Create the list header prototype for modules. */
+
+struct module *modread(char *);
+int     modfree(struct module *mod);
+
+int     modload(struct m_list_h *, char *);
+int     modunload(struct module *);
+
+void    modshow(struct module *);
 int     modstat(char *arg);
 
-#define MODULE_LIST_INIT do{                \
-    LIST_INIT(m_listp);                     \
-} while (0)
+int     modappend(struct m_list_h *, struct module *);
+int     modpop(struct module *mod);
 
-#define MODULE_METADATA(name, data) do{     \
-    struct module *var = (struct module *)  \
-        malloc(sizeof(struct module));      \
-    var->name = #name;                      \
-    var->moduledata = data;                 \
-} while (0)
+int     modinit(struct module *mod);
+int     moduninit(struct module *mod);
 
-#define DECLARE_MODULE(name, data)  do{     \
-    MODULE_METADATA(#name, &data);          \
-} while (0)
+int modload(struct m_list_h *mlist_hp,
+        char *mod_name)
+{
+    struct module *mod = modread(mod_name);
+    if (mod == NULL){
+        fprintf(stderr, "On load module.\n");
+        return -1;
+    }
+    int erro = modinit(mod);
+    if (modappend(mlist_hp, mod) != 0){
+        fprintf(stderr, "On join module into a list.\n");
+        return -1;
+    }
+    return 0;
+}
 
-/* Global variables */
-LIST_HEAD(modlist, module)  m_list;         /* (m) header of module list. */
-struct modlist              *m_listp = &m_list;/* (m) module list. */
+int modunload(struct module *mod)
+{
+    if (mod == NULL){
+        fprintf(stderr, "On unload module.\n");
+        return -1;
+    }
+    int erro = moduninit(mod);
+    if (modpop(mod) != 0){
+        fprintf(stderr, "On rm module from list.\n");
+        return -1;
+    }
+    modfree(mod);
+    return 0;
+}
 
-static int                  modid = 0;      /* module counter, set modid for the next loaded module. */
+int modinit(struct module *mod){
+    const struct module_data *mod_data = mod->moduledata;
+    int erro = mod_data->load(MOD_LOAD, mod_data->extra);
+    return erro;
+}
+
+int moduninit(struct module *mod){
+    const struct module_data *mod_data = mod->moduledata;
+    int erro = mod_data->load(MOD_UNLOAD, mod_data->extra);
+    return erro;
+}
+
+/* Insert a module into a module list. */
+int modappend(struct m_list_h *mlist_hp,
+        struct module *mod)
+{
+    LIST_INSERT_HEAD(mlist_hp, mod, m_list);
+    return 0;
+}
+
+int modpop(struct module *mod)
+{
+    LIST_REMOVE(mod, m_list);
+    return 0;
+}
+
 
 /* def functions for module management. */
-int modload(char *modulename){
+struct module* modread(char *modulename){
     /* dl handler to load a module from file. 
      * memory leak will happen if not free with dlclose()
      * dlclose() should be invoked in modunload() function.*/
-    void *handle;
-
-    int count = 0;
-    if ((handle = dlopen(modulename, RTLD_LAZY)) == NULL){
+    void *_handle;
+    if ((_handle = dlopen(modulename, RTLD_LAZY)) == NULL){
         fprintf(stderr, " MODULE: Can not open dynamic module %s\n", modulename);
-        return 1;
+        return NULL;
     }
 #ifdef Debug 
     else 
         printf("Module file: %s loaded successfully!\n", modulename);
 #endif
 
-    /* It's not Ok to make the pointer confusing.*/
-    struct module **newmod;
-    newmod =(struct module **) dlsym(handle, "mymod");
+    struct module_data_wrap *wrap = 
+        (struct module_data_wrap *)dlsym(_handle, "mod_data");
+    const struct module_data *m_data = wrap->data; 
 
 #ifdef Debug
-    printf("Module name: %s\n", (*newmod)->name);
+    printf("Module name: %s\n", m_data->name);
 #endif
-
-    /* Initialization of a module: Invoking load() of the module. */
-    (*newmod)->moduledata->load(MOD_LOAD,
-            (*newmod)->moduledata->extra);
-    /* Set modid for a module, which is an unique id. 
-     * Id generator should be rewrited. */
-    (*newmod)->modid = modid;
-    (*newmod)->modfile = handle;
 
     /* If any abnormal behavior happend, close the handle, and unload the module. */
     if (dlerror() != NULL){
         fprintf(stderr, " MODULE: Can not close dynamic module %s\n", modulename);
-        dlclose(handle);
-        return 2;
+        dlclose(_handle);
+        return NULL;
     }
 
-    LIST_INSERT_HEAD(m_listp, *newmod, mod_list);
-    modid ++;
+    struct module *__module = (struct module *) malloc (sizeof(struct module));
+    __module->moduledata = m_data;
+    __module->modfile = _handle;
+    __module->name = m_data->name;
 
+    return __module;
+}
+
+int modfree(struct module *mod){
+    int erro = dlclose(mod->modfile);
+    if (erro != 0){
+        fprintf(stderr, "[Module] : mod %s dlfile cannot be closed .\n", mod->name);
+        return erro;
+    }
+    free(mod);
     return 0;
 }
 
-int modunload(char *modulename){
-    struct module *var;
-    LIST_FOREACH(var, m_listp, mod_list){
-        if (strcmp(var->name, modulename) == 0){
-            var->moduledata->load(MOD_UNLOAD,
-                    var->moduledata->extra);
-            LIST_REMOVE(var, mod_list);
-            dlclose(var->modfile);
-            return 0;
-        }
-    }
-    fprintf(stderr, "MODULE: mod %s not found!\n",modulename);
-    return -1;
-}
+/* int modunload(struct module *__module){ */
+/*     int erro = dlclose(__module->modfile); */
+/*     if (erro != 0){ */
+/*         fprintf(stderr, "MODULE: mod %s dl file can not be freed!\n", __module->name); */
+/*     } */
+/*     return -1; */
+/* } */
 
 void modshow(struct module *var){
     printf("------\n");
@@ -173,12 +231,12 @@ void modshow(struct module *var){
     printf("\n");
 }
 
-int modstat(char *arg){
-    struct module *var;
-    LIST_FOREACH(var, m_listp, mod_list){
-        modshow(var);
-    }
-    return 0;
-}
+/* int modstat(char *arg){ */
+/*     struct module *var; */
+/*     LIST_FOREACH(var, m_listp, mod_list){ */
+/*         modshow(var); */
+/*     } */
+/*     return 0; */
+/* } */
 
 #endif
