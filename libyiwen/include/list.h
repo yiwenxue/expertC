@@ -73,10 +73,19 @@ struct {                                                \
     container_of((elm)->field.le_prev,                \
            struct type, field.le_next)
 
+
+/* Never delete emement when using this macro, instead, you
+ * should use LIST_FOREACH_SAFE, if you want to delete emements
+ * */
 #define LIST_FOREACH(var, head, field)                  \
     for((var) = LIST_FIRST(head);                       \
         (var);                                          \
         (var) = LIST_NEXT((var), field))
+
+#define LIST_FOREACH_SAFE(var, head, field, tvar)       \
+    for((var) = LIST_FIRST(head);                       \
+        (var) && ((tvar) = LIST_NEXT((var), field),1);  \
+        (var) = (tvar))
 
 #define LIST_FOREACH_FROM(var, head, field)             \
     for((var) = ((var)? (var) : LIST_FIRST(head));      \
