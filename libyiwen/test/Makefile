@@ -1,18 +1,18 @@
 CC= clang
 CFLAGS= -I../include/
 LIBS= 
-LDFLAGS= ${LIBS}
+LDFLAGS= ${LIBS} -ldl 
 
-SRC= $(wildcard *.c)
-MODKO= $(patsubst %.c, %, $(SRC))
+MODSRC= $(wildcard *.c)
+# MODTMP= $(patsubst %.c, %.o, $(MODSRC))
+MODKO= $(patsubst %.c, %, $(MODSRC))
 
 all: ${MODKO}
 
-%: %.c
+%: %c
 	${CC} ${CFLAGS} ${LDFLAGS} $< -o $@
 
 .PHONY: clean
 
 clean: 
 	rm -rf ${MODKO}
-
