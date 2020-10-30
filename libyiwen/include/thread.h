@@ -39,7 +39,7 @@
 
 #define TRN_LEN 255
 
-static int max_theads;
+static int max_theads = 255;
 
 typedef pthread_t tid_t;
 
