@@ -80,7 +80,7 @@ size_t split(char *buffer, char *argv[], size_t argv_size)
         c = (unsigned char) *p;
         switch (state) {
             case DULL:
-                if (isspace(c)) continue;
+                if (isspace(c) || c < 32 || c > 127) continue;
                 if (c == '"') {
                     state = IN_STRING;
                     start_of_word = p + 1; 

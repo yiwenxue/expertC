@@ -1,6 +1,5 @@
 #include "../../include/command.h"
 #include "../../include/module.h"
-#include "./screencap/data.h"
 #include <stdio.h>
 #include <string.h>
 

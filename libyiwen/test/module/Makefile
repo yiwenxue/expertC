@@ -3,7 +3,7 @@ CFLAGS= -I../ -I../../../libyiwen/include/
 LIBS=  -ldl -L../../src/ -lyiwen
 LDFLAGS= ${LIBS}
 
-module=cmdmodule
+module= main
 
 all:${module}
 	@echo Module $< generated! 

@@ -5,11 +5,11 @@
 #include "yiwen_fatal.h"
 
 #define BUFFER 255 
-static int inter_ifexit = 0;
+/* static int inter_ifexit = 0; */
 
-static char cmd_line[BUFFER];
-static char cmd_token[BUFFER];
-static char cmd_args[BUFFER];
+/* static char cmd_line[BUFFER]; */
+/* static char cmd_token[BUFFER]; */
+/* static char cmd_args[BUFFER]; */
 
 int inter_loop(int (*handle)());
 

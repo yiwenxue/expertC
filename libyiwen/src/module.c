@@ -12,7 +12,9 @@ int     mprintf(const char * _fmt, ...){
 int modload(struct mod_list_h *mlist_hp,
         char *mod_name)
 {
+#if debug 
     printf("  [modload] Run the load routine.\n");
+#endif 
     struct module *mod = modread(mod_name);
     if (mod == NULL){
         fprintf(stderr, "  [modload] On load module.\n");
@@ -33,7 +35,9 @@ int modload(struct mod_list_h *mlist_hp,
 
 int modunload(struct module *mod)
 {
+#if debug 
     printf("  [modunload] Run the unload routine.\n");
+#endif 
     if (mod == NULL){
         fprintf(stderr, "  [modunload] On unload module.\n");
         return -1;
@@ -48,7 +52,9 @@ int modunload(struct module *mod)
 }
 
 int modinit(struct module *mod){
+#if debug 
     printf("  [modinit] Run the init routine.\n");
+#endif 
     const struct module_data *mod_data = mod->moduledata;
     int erro = mod_data->load(MOD_LOAD, mod_data->extra);
     if (erro != 0){
@@ -58,7 +64,9 @@ int modinit(struct module *mod){
 }
 
 int moduninit(struct module *mod){
+#if debug 
     printf("  [moduninit] Run the uninit routine.\n");
+#endif 
     const struct module_data *mod_data = mod->moduledata;
     int erro = mod_data->load(MOD_UNLOAD, mod_data->extra);
     if (erro != 0){
@@ -120,7 +128,9 @@ struct module* modread(char *modulename){
 }
 
 int modfree(struct module *mod){
+#if debug 
     printf("  [modfree] Run the modfree routine.\n");
+#endif 
     int erro = dlclose(mod->modfile);
     if (erro != 0){
         fprintf(stderr, "  [modfree] mod %s dlfile cannot be closed .\n", mod->name);

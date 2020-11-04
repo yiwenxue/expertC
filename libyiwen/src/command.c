@@ -44,7 +44,9 @@ int command_env_handle(int cmd, void *extra){
 struct command *cmdseek(struct cmd_list_h *cmd_list_hp, 
         const char *name)
 {
+#if debug 
     printf("    [cmdseek] Search the matched cmdmodule.\n");
+#endif 
     struct command *var;
     LIST_FOREACH(var, cmd_list_hp, cmd_list){
         if (strncmp(var->name, name, 255) == 0){
@@ -60,13 +62,17 @@ struct command *cmdseek(struct cmd_list_h *cmd_list_hp,
             return var;
         }
     }
+#if debug 
     printf("    [cmdseek] the module %s not found!\n", name);
+#endif 
 
     return NULL;
 }
 
 int cmdload(struct cmd_list_h *cmd_list_hp, const struct command_data_wrap *wrap){
+#if debug 
     printf("    [cmdload] Run the load routine.\n");
+#endif 
     struct command *cmd = cmdfetch(wrap);
     if (cmd == NULL){
         fprintf(stderr, "Fetch command failed!\n");
@@ -81,7 +87,9 @@ int cmdload(struct cmd_list_h *cmd_list_hp, const struct command_data_wrap *wrap
 }
 
 int cmdunload(struct command *cmd){
+#if debug 
     printf("    [cmdunload] Run the unload routine.\n");
+#endif 
     if (cmd == NULL){
         fprintf(stderr, "On unload command: cmd points to NULL.\n");
         return -1;
@@ -104,7 +112,9 @@ int cmdunload(struct command *cmd){
 }
 
 int cmdinit(struct command *cmd){
+#if debug 
     printf("    [cmdinit] Run the init routine.\n");
+#endif 
     int erro = cmd->handle(MOD_LOAD, cmd->handle_args);
     if (erro != 0){
         printf("    [cmdinit] %s module init faild.\n", cmd->name);
@@ -113,7 +123,9 @@ int cmdinit(struct command *cmd){
 }
 
 int cmduninit(struct command *cmd){
+#if debug 
     printf("    [cmduninit] Run the uninit routine.\n");
+#endif 
     if (cmd == NULL || cmd->handle == NULL){
         printf("    [cmduninit] %s module uninit -- handle func not found.\n", cmd->name);
         printf("      cmd module:\n"
@@ -153,7 +165,9 @@ struct command *cmdfetch(const struct command_data_wrap *wrap){
 }
 
 int cmdfree(struct command *cmd){
+#if debug 
     printf("    [cmdfree] Run the cmdfree routine.\n");
+#endif 
     free(cmd);
     return 0;
 }
