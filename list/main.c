@@ -7,9 +7,11 @@
     ((type *)((char *)(ptr) - offsetof(type, member)))
 
 struct task{
-    char *tit;
+    /* char *tit; */
     int i;
-    char *des;
+    int i2;
+    char *kajhd;
+    /* char *des; */
     LIST_ENTRY(task) t_list;
 };
 
@@ -66,61 +68,68 @@ int main(int argc, char *argv[])
     struct task *var;
     headp = &head;
 
-    var = (struct task*) malloc(sizeof(struct task));
-    var->tit = (char *) malloc(sizeof(char) * 255);
-    var->des = (char *) malloc(sizeof(char) * 255);
-    sprintf(var->tit, "Fucking List");
-    sprintf(var->des,  "The list to be fucked");
-    /* var->t_list.le_next = NULL; */
-    var->i = 0;
+    /* var = (struct task*) malloc(sizeof(struct task)); */
+    /* var->tit = (char *) malloc(sizeof(char) * 255); */
+    /* var->des = (char *) malloc(sizeof(char) * 255); */
+    /* sprintf(var->tit, "Fucking List"); */
+    /* sprintf(var->des,  "The list to be fucked"); */
+    /* /1* var->t_list.le_next = NULL; *1/ */
+    /* var->i = 0; */
     /* var->t_list.le_prev = &head.lh_first; */
     /* LIST_FIRST(headp) = var; */
 
     LIST_INIT(headp);
-    LIST_INSERT_HEAD(headp, var, t_list);
+    /* LIST_INSERT_HEAD(headp, var, t_list); */
 
     for (int i = 1; i < num; i++) {
         var= (struct task *)malloc(sizeof(struct task));
-        var->tit = (char *) malloc(sizeof(char) * 255);
-        var->des = (char *) malloc(sizeof(char) * 255);
-        sprintf(var->tit, "Fuck you (%d)",i);
-        sprintf(var->des,  "Fuck you %d times",i);
+        /* var->tit = (char *) malloc(sizeof(char) * 255); */
+        /* var->des = (char *) malloc(sizeof(char) * 255); */
+        /* sprintf(var->tit, "Fuck you (%d)",i); */
+        /* sprintf(var->des,  "Fuck you %d times",i); */
         var->i = i;
         LIST_INSERT_HEAD(headp, var, t_list);
     }
 
     LIST_FOREACH(var, headp, t_list){
-        if(var->i%2)
-            printf("----------odd-----------\ntit: %s\ndes: %s\nnum: %d\n",var->tit, var->des, var->i);
-        else
-            printf("----------even----------\ntit: %s\ndes: %s\nnum: %d\n",var->tit, var->des, var->i);
+        printf("id: %d\t", var->i);
+        printf("self: %p\t", var);
+        printf("var->prev: %p\t", LIST_PREV(var, headp, task, t_list));
+        printf("var->next: %p\n", LIST_NEXT(var, t_list));
     }
 
-    printf("The deleted: [");
+/*     LIST_FOREACH(var, headp, t_list){ */
+/*         if(var->i%2) */
+/*             printf("----------odd-----------\ntit: %s\ndes: %s\nnum: %d\n",var->tit, var->des, var->i); */
+/*         else */
+/*             printf("----------even----------\ntit: %s\ndes: %s\nnum: %d\n",var->tit, var->des, var->i); */
+/*     } */
+
+    /* printf("The deleted: ["); */
     LIST_FOREACH(var, headp, t_list){
         /* if(var->i%2 != 0) */
         /*     continue; */
             LIST_REMOVE(var, t_list);
             /* printf("********delete**********\ntit: %s\ndes: %s\nnum: %d\n",var->tit, var->des, var->i); */
-            printf("%d ", var->i);
-            if (var->i == 0)
-                continue;
-            free(var->des);
-            free(var->tit);
+            /* printf("%d ", var->i); */
+            /* if (var->i == 0) */
+            /*     continue; */
+            /* free(var->des); */
+            /* free(var->tit); */
             free(var);
     }
-    printf("]\n");
+    /* printf("]\n"); */
 
-    printf("The rest: [");
-    LIST_FOREACH(var, headp, t_list){
+    /* printf("The rest: ["); */
+    /* LIST_FOREACH(var, headp, t_list){ */
         /* if(var->i%2) */
         /*     printf("----------odd-----------\ntit: %s\ndes: %s\nnum: %d\n",var->tit, var->des, var->i); */
         /* else */
         /*     printf("----------even----------\ntit: %s\ndes: %s\nnum: %d\n",var->tit, var->des, var->i); */
             /* printf("------------------------\ntit: %s\ndes: %s\nnum: %d\n",var->tit, var->des, var->i); */
-            printf("%d ", var->i);
-    }
-    printf("]\n");
+            /* printf("%d ", var->i); */
+    /* } */
+    /* printf("]\n"); */
 
 
     return 0;

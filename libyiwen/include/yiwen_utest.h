@@ -1,6 +1,6 @@
 /* 
  Yiwen's unit test tool.
- Copyright © 2020 yiwenxue
+ Copyright © 2020 yiwen xue
  All rights reserved.
 
  Redistribution and use in source and binary forms, with or without
@@ -29,4 +29,5 @@
  SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
+#pragma once
 #define UTEST_VERSION 0.1

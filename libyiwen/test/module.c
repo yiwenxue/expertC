@@ -8,8 +8,8 @@ void modinfo(struct module *mod);
 
 int main(int argc, char *argv[])
 {
-    struct m_list_h mpool_h;
-    struct m_list_h *mpool_hp = &mpool_h;
+    struct mod_list_h mpool_h;
+    struct mod_list_h *mpool_hp = &mpool_h;
 
     LIST_INIT(mpool_hp);
 
@@ -23,7 +23,7 @@ int main(int argc, char *argv[])
     }
 
     for (int i = 1; i < argc; ++i) {
-        modload(mpool_hp, argv[i]);
+        modload(mpool_hp, argv[i], NULL);
         /* struct module *mod = modload(argv[i]); */
         /* mod->modid = i; */
         /* mod->moduledata->load(MOD_LOAD, NULL); */
@@ -38,7 +38,7 @@ int main(int argc, char *argv[])
     LIST_FOREACH_SAFE(mod, mpool_hp, m_list, tvar){
         mod->modid = rand() %100;
         /* modinfo(mod); */
-        modunload(mod);
+        modunload(mod, NULL);
     }
 
     return 0;

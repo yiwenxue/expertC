@@ -1,6 +1,6 @@
 #include "../include/module.h"
 
-int     mprintf(const char * _fmt, ...){
+int mprintf(const char * _fmt, ...){
     va_list ap;
     va_start(ap, _fmt);
     printf("       [module] ");

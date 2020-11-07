@@ -1,6 +1,6 @@
 CC= clang
 CFLAGS= -I/include/ -fPIC
-LIBS= -ldl 
+LIBS= -ldl
 LDFLAGS= ${LIBS} -shared
 
 incyiwen= ./include/log.h\
@@ -14,7 +14,8 @@ incyiwen= ./include/log.h\
 		  ./include/yiwen_pcolor.h
 
 srcyiwen= ./src/module.c \
-		  ./src/command.c
+		  ./src/command.c \
+		  ./src/yiwen_int.c
 
 tempyiwen= $(patsubst %.c, %.o, $(srcyiwen))
 
@@ -31,6 +32,9 @@ module.o: ${incyiwen} ./src/module.c
 
 command.o: ${incyiwen} ./src/command.c
 	${CC} ${CFLAGS} -c ./src/command.c -o ./src/command.o
+
+yiwen_int.o: ${incyiwen} ./src/yiwen_int.c
+	${CC} ${CFLAGS} -c ./src/yiwen_int.c -o ./src/yiwen_int.o
 
 .PHONY: clean
 

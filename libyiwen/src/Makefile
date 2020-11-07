@@ -14,7 +14,8 @@ incyiwen= ../include/log.h\
 		  ../include/yiwen_pcolor.h
 
 srcyiwen= ./module.c \
-		  ./command.c
+		  ./command.c \
+		  ./yiwen_int.c
 
 tempyiwen= $(patsubst %.c, %.o, $(srcyiwen))
 
@@ -29,6 +30,10 @@ module.o: ${incyiwen} module.c
 
 command.o: ${incyiwen} command.c
 	${CC} ${CFLAGS} -c command.c -o command.o
+
+yiwen_int.o: ${incyiwen} yiwen_int.c
+	${CC} ${CFLAGS} -c yiwen_int.c -o yiwen_int.o
+
 
 .PHONY: clean
 

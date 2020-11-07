@@ -11,6 +11,7 @@
 #define TBUFFER 1024
 #define PATH_MAX 255
 
+void welcome();
 void show_pwd();
 void show_time();
 void show_prompt(char *pmpt);
@@ -72,13 +73,15 @@ int main(int argc, char *argv[])
     }
 
     char cmdline[1024];
+    welcome();
 
     while (!inter_ifexit) {
         show_prompt("[%t|%s] > ");
 
-        if (readlinen(cmdline, TBUFFER) == -1)
+        if (readlinen(cmdline, TBUFFER) == -1){
+            printf("\n");
             break;
-
+        }
         parser(cmdline, TBUFFER);
     }
 #if debug 
@@ -96,6 +99,43 @@ int main(int argc, char *argv[])
     printf("[main] exit.\n");
 #endif
     return 0;
+}
+
+void welcome(){
+    char *asci = 
+"                ```                     `.--.              \n"
+"            -oyhhddddhs+-          ./shdddyyyyo-           \n"
+"           --`    `:oddddh:      -hddy+:`      .-          \n"
+"                     `+ddd:      `/:`                      \n"
+"                       .hmdo                               \n"
+"             `/oyyyso/. .mmm/         -+syyso/`            \n"
+"          .+:hdmmmmmmdhsydmms       -ydmmmmmmmh:+.         \n"
+"          .  -:://:-.    `ymh           `````    .         \n"
+"                          /mm                              \n"
+"                          ymm`                             \n"
+"                        `ommm`                             \n"
+"                       /mmmmm.                             \n"
+"                  ..  -mmmmmms   ./+`   `-.                \n"
+"          os+/os/:`    :++/hNNdhy--:`     ./ys+/yy         \n"
+"          `y.`hmy`       .sNNNNNNm/        +Nm.`y.         \n"
+"           .y``smdo///+ohmNNm/.yNNNmyo+++ohNh. s-          \n"
+"            -s` -ymNNNmdddhs:---+yhdddmNNds:  o/           \n"
+"             -y`  :yo/:::--.......------`    o/            \n"
+"              .y.   :so/-`                  o/             \n"
+"               `o:     .-:://+oo:-.       .o.              \n"
+"                 -/         `dNy         -/                \n"
+"                   -        -mNm.       ``                 \n"
+"                            hNNNs                          \n"
+"                            oNNN/                          \n"
+"                            `mNm`                          \n"
+"                             /N+                           \n"
+"                              s`                           \n"
+"                                                           \n";
+    printf("%s%s", asci,
+" --------------------------------------------------------- \n"
+"|                      Welcome, "C_RED"h4ck3r"C_DEFAULT".                   |\n"
+" --------------------------------------------------------- \n\n"
+);
 }
 
 int modctl(int argc, char **argv){
@@ -151,6 +191,7 @@ void show_prompt(char *pmpt){
             putc(pmpt[i-1], stdout);
         }
     }
+    fflush(stdout);
 }
 
 void parser(char *cmd, int len){
@@ -186,6 +227,7 @@ void parser(char *cmd, int len){
             }
         }
     }
+    shell_state = -1;
 
 /* #if debug */ 
     printf("  [parser] Command not found: %s\n", cmdline);

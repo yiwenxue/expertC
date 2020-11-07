@@ -1,6 +1,6 @@
 /*-
  Thread Toolkit based on pthread
- Copyright © 2020 yiwenxue 
+ Copyright © 2020 yiwen xue 
  All rights reserved.
 
  Redistribution and use in source and binary forms, with or without
