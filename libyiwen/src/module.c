@@ -1,5 +1,8 @@
 #include "../include/module.h"
 
+/* The main module list head pointer used by the root program. */
+struct mod_list_h *mod_list_main_hp;
+
 int mprintf(const char * _fmt, ...){
     va_list ap;
     va_start(ap, _fmt);
@@ -140,7 +143,6 @@ int modfree(struct module *mod){
     return 0;
 }
 
-
 void modshow(struct module *var){
     printf("------\n");
     printf(" name: %s\n", var->name);
@@ -148,3 +150,18 @@ void modshow(struct module *var){
     printf("\n");
 }
 
+int modctl_load(char *mod_name){
+    return modload(mod_list_main_hp, mod_name);
+}
+
+int modctl_unload(char * mod_name){
+    struct module *var, *tvar;
+    int erro = 0;
+    LIST_FOREACH_SAFE(var, mod_list_main_hp, m_list, tvar){
+        if (strncmp(var->moduledata->name, mod_name, MOD_NAME_LEN) == 0){
+            erro = modunload(var);
+            return erro;
+        }
+    }
+    return -1;
+}

@@ -85,6 +85,7 @@ struct module{
     void                    *modfile;       /* Pointer to module file */
 };
 typedef struct module module_t;
+#define MOD_NAME_LEN 255 
 
 typedef int     module_init_handle_t(int cmd, void *extra);
 
@@ -113,5 +114,9 @@ int             modinit(struct module *mod);
 int             moduninit(struct module *mod);
 #include <stdarg.h>
 int             mprintf(const char *, ...);
+
+/* Functions for easy control the modules in the main list. */
+int             modctl_load(char *);
+int             modctl_unload(char *);
 
 #endif
